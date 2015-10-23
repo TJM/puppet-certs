@@ -79,42 +79,42 @@ define certs::vhost (
     fail('You must provide a target_ path for the certs to certs::vhost.')
   }
 
+  $crt_filename = "${name}.crt"
+  $key_filename = "${name}.key"
+
   if ($cert != undef) {
     # Use the cert provided instead of looking in source_path
     $cert_source = undef
   } else {
     if ($source_path != undef) {
-      $cert_source = "${source_path}/${name}.crt"
+      $cert_source = "${source_path}/${crt_filename}"
     } else {
-      fail('You must provide a source_path or cert for the SSL files to certs::vhost.')
+      fail('You must provide a source_path for the SSL files or cert to certs::vhost.')
     }
   }
-
-  $crt = "${name}.crt"
-  $key = "${name}.key"
 
   if ($key != undef) {
     # Use the cert provided instead of looking in source_path
     $key_source = undef
   } else {
     if ($source_path != undef) {
-      $key_source = "${source_path}/${name}.crt"
+      $key_source = "${source_path}/${key_filename}"
     } else {
-      fail('You must provide a source_path or key for the SSL files to certs::vhost.')
+      fail('You must provide a source_path for the SSL files or key to certs::vhost.')
     }
   }
 
-  file { $crt:
+  file { $crt_filename:
     ensure  => file,
-    path    => "${target_path}/${crt}",
+    path    => "${target_path}/${crt_filename}",
     content => $cert,
     source  => $cert_source,
     notify  => Service[$service],
   } ->
 
-  file { $key:
+  file { $key_filename:
     ensure  => file,
-    path    => "${target_path}/${key}",
+    path    => "${target_path}/${key_filename}",
     content => $key,
     source  => $key_source,
     notify  => Service[$service],
